@@ -68,14 +68,6 @@ while (-not $tunnel) {
     Start-Sleep -Seconds 5
 }
 
-# --- Software Installation Deployment ---
-try {
-    Invoke-WebRequest "https://gitlab.com/Shahzaib-YT/enigmano-multi-instance/-/raw/main/Software-installation.ps1" -OutFile Software-installation.ps1
-    .\Software-installation.ps1
-} catch {
-    Fail "Software installation deployment failed: $_"
-}
-
 # === DATA VAULT CREATION ===
 try {
     $desktopPath = [Environment]::GetFolderPath("Desktop")
