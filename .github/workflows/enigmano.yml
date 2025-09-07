@@ -47,10 +47,34 @@ jobs:
           }
           Write-Host "✅ All required secrets validated successfully"
 
+      - name: 📦 Install Software via Chocolatey (Brave, WinRAR, Notepad++)
+        shell: pwsh
+        run: |
+          Write-Host "Installing Chocolatey and apps..." -ForegroundColor Green
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+          choco --version
+
+          # Install apps (idempotent)
+          choco install brave -y --no-progress || Write-Host "Brave install step ended (possibly already installed)."
+          choco install winrar -y --no-progress || Write-Host "WinRAR install step ended (possibly already installed)."
+          choco install notepadplusplus -y --no-progress || Write-Host "Notepad++ install step ended (possibly already installed)."
+
+      - name: 🧩 Force-install uBlock Origin for Brave
+        shell: pwsh
+        run: |
+          Write-Host "Configuring policy to force-install uBlock Origin in Brave..." -ForegroundColor Green
+          $policyPath = "HKLM:\Software\Policies\BraveSoftware\Brave\ExtensionInstallForcelist"
+          New-Item -Path $policyPath -Force | Out-Null
+          New-ItemProperty -Path $policyPath -Name "1" -Value "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx" -PropertyType String -Force | Out-Null
+          Write-Host "Policy set. uBlock Origin will be installed when Brave launches." -ForegroundColor Green
+
       - name: 📥 Download EnigMano-instance.ps1
         shell: pwsh
         run: |
-          $url = "https://raw.githubusercontent.com/Redveter/Debtgdt/refs/heads/main/EnigMano-instance.ps1"
+          $url = "https://raw.githubusercontent.com/Redveter/EnigMano-Multi-Instance/refs/heads/main/EnigMano-instance.ps1"
           Write-Host "🌐 Downloading EnigMano-instance.ps1..."
           Invoke-WebRequest -Uri $url -OutFile "EnigMano-instance.ps1" -UseBasicParsing
           if (!(Test-Path "./EnigMano-instance.ps1")) {
@@ -64,6 +88,7 @@ jobs:
         run: |
           Write-Host "🚦 Initiating EnigMano-instance.ps1"
           powershell.exe -ExecutionPolicy Bypass -File ".\EnigMano-instance.ps1"
+
 
       - name: 💠 Final Status
         if: always()
