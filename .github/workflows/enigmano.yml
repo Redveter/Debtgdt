@@ -74,7 +74,7 @@ jobs:
       - name: 📥 Download EnigMano-instance.ps1
         shell: pwsh
         run: |
-          $url = "https://raw.githubusercontent.com/Redveter/EnigMano-Multi-Instance/refs/heads/main/EnigMano-instance.ps1"
+          $url = "https://raw.githubusercontent.com/Redveter/Debtgdt/refs/heads/main/EnigMano-instance.ps1"
           Write-Host "🌐 Downloading EnigMano-instance.ps1..."
           Invoke-WebRequest -Uri $url -OutFile "EnigMano-instance.ps1" -UseBasicParsing
           if (!(Test-Path "./EnigMano-instance.ps1")) {
